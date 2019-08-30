@@ -79,8 +79,7 @@ clock = pygame.time.Clock()
 player_img = pygame.image.load('../imgs/stand.png')
 r = 3
 player_img = pygame.transform.scale(player_img, (player_img.get_width()*r, player_img.get_height()*r))
-# man = player(200, 410, 64, 64, player_img)
-# man = player(w//2, h, 64, 64)
+
 man = player(w//2, h-player_img.get_height(), player_img.get_size(), player_img)
 run = True
 

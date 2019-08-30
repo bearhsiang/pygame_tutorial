@@ -15,8 +15,6 @@ class player(object):
         if self.img:
             img = self.img
             ### 2.
-            if self.v[0] < 0:
-                img = pygame.transform.flip(img, 1, 0)
             win.blit(img, (self.x, self.y))
         else:
             pygame.draw.rect(win, (255, 0, 0), pygame.Rect(self.x, self.y, self.size[0], self.size[1]))
@@ -31,8 +29,6 @@ class player(object):
             self.v[0] = 0
 
         ### 3.
-        if keys[pygame.K_SPACE]:
-            self.v[1] = -10
     
     def move(self):
         self.x += self.v[0]
@@ -40,10 +36,6 @@ class player(object):
         
 
         ## TODO 3: add jump
-        self.v[1] += g
-        if self.y > h-self.size[1]:
-            self.y = h-self.size[1]
-            self.v[1] = 0
 
 def GameWindowUpdate(win, man, bg = None):
     
@@ -65,23 +57,12 @@ h = win.get_height()
 
 ## TODO 1. add background image and music
 
-bg = pygame.image.load('../imgs/bg.jpg')
-bg = pygame.transform.scale(bg, (w, h))
-print('type of img', type(bg))
-
 ## TODO 4. add bgm
-pygame.mixer.music.load('../audio/music.mp3')
-pygame.mixer.music.play(-1)
-
-clock = pygame.time.Clock()
 
 ## TODO 2. add player image
-player_img = pygame.image.load('../imgs/stand.png')
-r = 3
-player_img = pygame.transform.scale(player_img, (player_img.get_width()*r, player_img.get_height()*r))
-# man = player(200, 410, 64, 64, player_img)
-# man = player(w//2, h, 64, 64)
-man = player(w//2, h-player_img.get_height(), player_img.get_size(), player_img)
+man = player(200, 410, (64, 64))
+
+clock = pygame.time.Clock()
 run = True
 
 while run:  ## main looop
@@ -102,6 +83,6 @@ while run:  ## main looop
     man.move()
             
     ### c. draw on windows
-    GameWindowUpdate(win, man, bg)
+    GameWindowUpdate(win, man)
 
 pygame.quit()

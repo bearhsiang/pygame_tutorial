@@ -33,7 +33,7 @@ def GameWindowUpdate(win, man):
 pygame.init()
 
 win = pygame.display.set_mode((800, 600))
-print('type of win:', type(win))
+# print('type of win:', type(win))
 pygame.display.set_caption("First Game")
 w = win.get_width()
 h = win.get_height()

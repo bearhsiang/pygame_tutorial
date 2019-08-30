@@ -1,34 +1,39 @@
 import pygame
 
-g = 3
+g = 1
 
 class player(object):
-    def __init__(self,x,y,width,height, imgs = None):
+    def __init__(self,x,y,size, imgs = None):
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
+        self.size = size
         self.v = [0, 0]
         self.imgs = imgs
-        self.dir = 1
-
+        self.clock = 0
 
     def draw(self, win):
         if self.imgs:
-            img = self.imgs[(count%(5*len(self.imgs)))//len(self.imgs)]
-            if self.dir < 0:
+
+            if self.v[0] == 0:
+                img = self.get_img('idle')
+            else:
+                img = self.get_img('run')
+
+            ### 2.
+            if self.v[0] < 0:
                 img = pygame.transform.flip(img, 1, 0)
             win.blit(img, (self.x, self.y))
         else:
-            pygame.draw.rect(win, (255, 0, 0), pygame.Rect(self.x, self.y, self.width, self.height))
+            pygame.draw.rect(win, (255, 0, 0), pygame.Rect(self.x, self.y, self.size[0], self.size[1]))
 
+    def get_img(self, key):
+        index = (self.clock%(3*len(self.imgs[key])))//len(self.imgs[key])
+        return self.imgs[key][index]
 
     def update(self, keys):
         if keys[pygame.K_LEFT]:
-            self.dir = -1
             self.v[0] = -4
         elif keys[pygame.K_RIGHT]:
-            self.dir = 1
             self.v[0] = 4
         else:
             self.v[0] = 0
@@ -36,26 +41,38 @@ class player(object):
         ### 3.
         if keys[pygame.K_SPACE]:
             self.v[1] = -10
-
+    
     def move(self):
         self.x += self.v[0]
         self.y += self.v[1]
         
+
+        ## TODO 3: add jump
         self.v[1] += g
-        if self.y > h-self.height:
-            self.y = h-self.height
+        if self.y > h-self.size[1]:
+            self.y = h-self.size[1]
             self.v[1] = 0
+
+        self.clock += 1
 
 def GameWindowUpdate(win, man, bg = None):
     
     if bg:
         win.blit(bg, (0, 0))
     else:
-        print('no')
         win.fill((0, 0, 0))
     
     man.draw(win)
     pygame.display.update()
+
+def load_imgs(prefix, N, r):
+    imgs = []
+    for i in range(N):
+        img = pygame.image.load(prefix+str(i)+'.png')
+        img = pygame.transform.scale(img, (img.get_width()*r, img.get_height()*r))
+        imgs.append(img)
+
+    return imgs
 
 ## initial the game
 pygame.init()
@@ -68,30 +85,35 @@ h = win.get_height()
 ## TODO 1. add background image and music
 bg = pygame.Surface((w, h))
 for i in range(1, 6):
-    img = pygame.image.load('../Jungle Asset Pack/parallax background/plx-'+str(i)+'.png')
+    img = pygame.image.load('../imgs/multi-bg/plx-'+str(i)+'.png')
     img = pygame.transform.scale(img, (w, h))
     bg.blit(img, (0, 0))
+# bg = pygame.image.load('../imgs/bg.jpg')
+print('type of img', type(bg))
 
-pygame.mixer.music.load('audio/music.mp3')
+## TODO 4. add bgm
+pygame.mixer.music.load('../audio/music.mp3')
 pygame.mixer.music.play(-1)
 
 clock = pygame.time.Clock()
 
 ## TODO 2. add player image
-player_imgs = []
+# player_imgs = []
+# for i in range(11):
+#     player_img = pygame.image.load('../sprites/idle-'+str(i)+'.png')
+#     r = 3
+#     player_img = pygame.transform.scale(player_img, (player_img.get_width()*r, player_img.get_height()*r))
+#     player_imgs.append(player_img)
 
-for i in range(1, 11):
-    img = pygame.image.load('../Jungle Asset Pack/Character/sprites/idle-'+str(i)+'.png')
-    r = 2
-    img = pygame.transform.scale(img, (img.get_width()*r, img.get_height()*r))
-    player_imgs.append(img)
+player_imgs = {
+    'idle': load_imgs('../sprites/idle-', 12, 3),
+    'run':  load_imgs('../sprites/run-', 8, 3)
+}
 
-man = player(w//2, h-player_imgs[0].get_height(), player_imgs[0].get_width(), player_imgs[0].get_height(), player_imgs)
+man = player(w//2, h-player_imgs['idle'][0].get_height(), player_imgs['idle'][0].get_size(), player_imgs)
 run = True
 
-count = 0
-
-while run:  ## main looop
+while run:  ## main loop
     clock.tick(50)
 
     ### a. get input
@@ -110,7 +132,5 @@ while run:  ## main looop
             
     ### c. draw on windows
     GameWindowUpdate(win, man, bg)
-    count += 1
+
 pygame.quit()
-
-
